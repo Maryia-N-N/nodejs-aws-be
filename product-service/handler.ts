@@ -6,5 +6,4 @@ import {getProductsListService} from './handlers/getProductsList.service';
 export {
     getProductsListService,
     getProductsByIdService
-}
-
+};

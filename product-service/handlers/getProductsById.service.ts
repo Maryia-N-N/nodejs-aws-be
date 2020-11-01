@@ -1,7 +1,7 @@
 import {APIGatewayProxyHandler} from 'aws-lambda';
 import PRODUCT_LIST from './../constants/list.constants';
 
-// This is a mock service for getting static data. In next tasks, it should be replaced to a real service (e.g. getting data from DB or an external service).
+// In the following tasks, it should be replaced with a real service (for example, getting data from a database or an external service).
 const getById = async (productId: string) => PRODUCT_LIST.find(({id}) => id === productId);
 
 export const getProductsByIdService: APIGatewayProxyHandler = async (event) => {
@@ -21,7 +21,7 @@ export const getProductsByIdService: APIGatewayProxyHandler = async (event) => {
             return {
                 statusCode: 404,
                 body: JSON.stringify({
-                    message: 'No product id was found.'
+                    message: `Product was not found with the following id: ${productId}`
                 })
             };
         }
