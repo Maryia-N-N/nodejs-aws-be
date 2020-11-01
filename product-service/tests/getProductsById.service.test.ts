@@ -1,4 +1,4 @@
-import {getProductsByIdService} from '../handlers/getProductsById.service';
+import { getProductsByIdService } from '../handlers/getProductsById.service';
 
 test('should return product if id was passed', async () => {
 	const request = {pathParameters: {productId: '9d410614a67246d3b00c820add51ec0d'}};
