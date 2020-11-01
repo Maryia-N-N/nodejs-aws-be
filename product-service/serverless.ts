@@ -26,7 +26,7 @@ const serverlessConfiguration: Serverless = {
     },
     functions: {
         getProductsList: {
-            handler: 'handler.getProductsList',
+            handler: 'handler.getProductsListService',
             events: [
                 {
                     http: {
@@ -37,12 +37,12 @@ const serverlessConfiguration: Serverless = {
             ]
         },
         getProductsById: {
-            handler: 'handler.getProductsById',
+            handler: 'handler.getProductsByIdService',
             events: [
                 {
                     http: {
                         method: 'get',
-                        path: 'products/:productId'
+                        path: 'products/{productId}'
                     }
                 }
             ]

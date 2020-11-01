@@ -1,23 +1,26 @@
 import {APIGatewayProxyHandler} from 'aws-lambda';
-import PRODUCT_LIST from './../constants/list.constant';
+import PRODUCT_LIST from './../constants/list.constants';
+import {SHARED_ATTRIBUTES} from '../constants/sharedAttributes.constants';
 
-// This is a mock service for getting static data. In next tasks, it should be replaced to a real service (e.g. getting data from DB or external service).
+// This is a mock service for getting static data. In next tasks, it should be replaced to a real service (e.g. getting data from DB or an external service).
 const getList = async () => PRODUCT_LIST;
 
-export const getProductsList: APIGatewayProxyHandler = async () => {
+export const getProductsListService: APIGatewayProxyHandler = async () => {
     try {
         const list = await getList();
 
         return {
             statusCode: 200,
-            body: list
+            body: JSON.stringify(list),
+            ...SHARED_ATTRIBUTES
         };
     } catch (e) {
         return {
             statusCode: 500,
-            body: {
+            body: JSON.stringify({
                 message: e.message
-            }
+            }),
+            ...SHARED_ATTRIBUTES
         };
     }
 };
