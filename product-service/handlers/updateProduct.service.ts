@@ -10,13 +10,12 @@ export const updateProductService: APIGatewayProxyHandler = async (event: any) =
 
   log('Init request', event);
 
-  const {body} = event;
-
   try {
+    const body = JSON.parse(event.body);
     const validation = validateProduct(body);
 
     if (validation.error) {
-      return wrapResponse(validation.error.details, 400);
+      return wrapResponse({val: validation.error, event}, 400);
     }
 
     await client.connect();
