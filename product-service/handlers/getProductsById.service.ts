@@ -1,43 +1,34 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import PRODUCT_LIST from './../constants/list.constants';
-
-// In the following tasks, it should be replaced with a real service (for example, getting data from a database or an external service).
-const getById = async (productId: string) => PRODUCT_LIST.find(({id}) => id === productId);
+import { PRODUCT_BY_ID } from '../constants/sql';
+import { getClient, close } from '../db/connection';
+import { log } from '../utils/logger';
+import wrapResponse from '../utils/response';
 
 export const getProductsByIdService: APIGatewayProxyHandler = async (event) => {
+  const client = getClient();
+
+  log('Init request', event);
+
   try {
     const {productId} = event.pathParameters;
 
     if (productId) {
-      const product = await getById(productId);
+      await client.connect();
+      const {rows} = await client.query({text: PRODUCT_BY_ID, values: [productId]});
 
-      if (product) {
-        return {
-          statusCode: 200,
-          body: JSON.stringify(product)
-        };
+      if (rows[0]) {
+        return wrapResponse(rows[0]);
       }
 
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          message: `Product was not found with the following id: ${productId}`
-        })
-      };
+      return wrapResponse({message: `Product was not found with the following id: ${productId}`}, 404);
     }
 
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: 'No product id was provided.'
-      })
-    };
+    return wrapResponse({message: 'No product id was provided.'}, 400);
   } catch (e) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: e.message
-      })
-    };
+    log(`Error occurred [${e.message}]`, event);
+
+    return wrapResponse({message: e.message}, 500);
+  } finally {
+    close(client);
   }
 };

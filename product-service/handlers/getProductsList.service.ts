@@ -1,26 +1,26 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import PRODUCT_LIST from './../constants/list.constants';
-import { SHARED_ATTRIBUTES } from '../constants/sharedAttributes.constants';
+import { PRODUCTS } from '../constants/sql';
+import { getClient, close } from '../db/connection';
+import { log } from '../utils/logger';
+import wrapResponse from '../utils/response';
 
-// In the following tasks, it should be replaced with a real service (for example, getting data from a database or an external service).
-const getList = async () => PRODUCT_LIST;
+export const getProductsListService: APIGatewayProxyHandler = async (event) => {
+  const client = getClient();
 
-export const getProductsListService: APIGatewayProxyHandler = async () => {
+  log('Init request', event);
+
   try {
-    const list = await getList();
+    await client.connect();
+    const {rows} = await client.query(PRODUCTS);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(list),
-      ...SHARED_ATTRIBUTES
-    };
+    log(`Data was found [${rows.length}]`, event);
+
+    return wrapResponse(rows);
   } catch (e) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: e.message
-      }),
-      ...SHARED_ATTRIBUTES
-    };
+    log(`Error occurred [${e.message}]`, event);
+
+    return wrapResponse({message: e.message}, 500);
+  } finally {
+    close(client);
   }
 };

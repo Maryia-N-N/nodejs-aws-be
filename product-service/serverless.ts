@@ -21,6 +21,9 @@ const serverlessConfiguration: Serverless = {
       minimumCompressionSize: 1024
     },
     environment: {
+      PG_HOST: 'aws-app-db-instance.czjxngfrqbsp.eu-west-1.rds.amazonaws.com',
+      PG_PORT: 5432,
+      PG_DATABASE: 'aws_app_db',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
     }
   },
@@ -43,6 +46,17 @@ const serverlessConfiguration: Serverless = {
           http: {
             method: 'get',
             path: 'products/{productId}'
+          }
+        }
+      ]
+    },
+    updateProduct: {
+      handler: 'handler.updateProductService',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'products'
           }
         }
       ]
